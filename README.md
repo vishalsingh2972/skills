@@ -20,6 +20,8 @@ These skills bridge that gap. Each one gives AI coding assistants the exact SDK 
 
 ## Skills
 
+The [vibe-coding](./vibe-coding) skill is **stack- and vendor-agnostic**—it is for anyone building with an agent. The other skills in this list document **Sarvam** APIs; use them when you integrate that product.
+
 | Skill | Description |
 |-------|-------------|
 | [chat](./chat) | Chat completions with Sarvam-105B/30B. Python & JS/TS quick starts, streaming, reasoning mode, OpenAI-compatible path, and the `content=None` gotcha. |
@@ -27,6 +29,7 @@ These skills bridge that gap. Each one gives AI coding assistants the exact SDK 
 | [text-to-speech](./text-to-speech) | Speech synthesis with Bulbul v3. Python & JS/TS quick starts, HTTP stream, WebSocket, pronunciation dictionaries, and unsupported parameter warnings. |
 | [translate](./translate) | Text translation with Sarvam-Translate v1 and Mayura v1. Python & JS/TS quick starts, model feature differences, and silent parameter failures. |
 | [voice-agents](./voice-agents) | Real-time voice agents with LiveKit and Pipecat (Python). JS/TS SDK reference for custom pipelines. |
+| [vibe-coding](./vibe-coding) | **Vendor-neutral** vibe coding: small steps, verification, skills over long prompts, and separating UI from API layers. For any stack. No SDK signatures—pair with domain or provider skills when you need them. |
 
 ## Installation
 
@@ -36,6 +39,7 @@ npx skills add sarvamai/skills
 
 # Install a specific skill
 npx skills add sarvamai/skills --skill chat
+npx skills add sarvamai/skills --skill vibe-coding
 
 # Browse skills interactively
 npx skills add sarvamai/skills --list
