@@ -4,7 +4,7 @@ description: Transcribe audio to text using Sarvam AI's Saaras model. Handles sp
 license: Apache-2.0
 metadata:
   author: sarvam-ai
-  version: "3.0"
+  version: "3.1"
 ---
 
 # Speech-to-Text — Saaras
@@ -62,7 +62,7 @@ job.wait_until_complete()
 job.download_outputs(output_dir="./output")
 ```
 
-Supports audio up to 1 hour, up to 8 speakers, all 5 output modes.
+Supports audio up to 2 hours per file, up to 20 files per job, up to 20 speakers (`num_speakers`), all 5 output modes.
 
 ## WebSocket Streaming
 
@@ -87,7 +87,7 @@ async def stream_audio():
 asyncio.run(stream_audio())
 ```
 
-Supports sessions up to 8 hours. Use `sample_rate=8000` for telephony audio.
+No fixed session duration limit — but the connection closes after **60 seconds of inactivity**. Use `sample_rate=8000` for telephony audio.
 
 ## Gotchas
 
@@ -95,9 +95,11 @@ Supports sessions up to 8 hours. Use `sample_rate=8000` for telephony audio.
 |--------|--------|
 | **REST: 30s limit** | Audio >30s fails. Use Batch API or WebSocket for longer files. |
 | **JS method name** | `client.speechToText.transcribe({...})` — camelCase, NOT `speech_to_text`. File via `fs.createReadStream()`. |
-| **WebSocket codecs** | Only `wav`, `pcm_s16le`, `pcm_l16`, `pcm_raw`. MP3/AAC/OGG NOT supported for streaming. |
+| **WebSocket codecs** | Only `wav`, `pcm_s16le`, `pcm_l16`, `pcm_raw`. MP3/AAC/OGG NOT supported for streaming. PCM input is 16kHz only. |
 | **WebSocket audio** | Must be **base64-encoded**. Use `sample_rate=8000` for telephony audio. |
+| **WebSocket idle timeout** | Connection closes after **60s of inactivity**. For long-running sessions, send periodic silent (near-zero amplitude) audio chunks as keep-alive. |
 | **Flush signal** | `flush_signal=True` + `await ws.flush()` forces immediate transcription boundary. |
+| **VAD events** | `vad_signals=True` emits `START_SPEECH`/`END_SPEECH` events alongside transcripts. `high_vad_sensitivity=True` for automatic end-of-speech detection. |
 | **Short audio detection** | Set `language_code` explicitly for audio <3 seconds — auto-detection needs more signal. |
 
 ## Full Docs
@@ -105,7 +107,7 @@ Supports sessions up to 8 hours. Use `sample_rate=8000` for telephony audio.
 Fetch streaming protocol, batch API SDK examples, and codec details from:
 
 - **https://docs.sarvam.ai/llms.txt** — comprehensive docs index
-- [STT Overview](https://docs.sarvam.ai/api-reference-docs/api-guides-tutorials/speech-to-text/overview)
-- [Streaming API](https://docs.sarvam.ai/api-reference-docs/api-guides-tutorials/speech-to-text/streaming-api)
-- [Batch API + Diarization](https://docs.sarvam.ai/api-reference-docs/api-guides-tutorials/speech-to-text/batch-api)
-- [Rate Limits](https://docs.sarvam.ai/api-reference-docs/ratelimits)
+- [STT Overview](https://docs.sarvam.ai/api/api-guides-tutorials/speech-to-text/overview)
+- [Streaming API](https://docs.sarvam.ai/api/api-guides-tutorials/speech-to-text/streaming-api)
+- [Batch API + Diarization](https://docs.sarvam.ai/api/api-guides-tutorials/speech-to-text/batch-api)
+- [Rate Limits](https://docs.sarvam.ai/api/ratelimits)

@@ -4,7 +4,7 @@ description: Translate text between English and Indian languages using Sarvam AI
 license: Apache-2.0
 metadata:
   author: sarvam-ai
-  version: "3.0"
+  version: "3.1"
 ---
 
 # Translation — Sarvam AI
@@ -16,8 +16,8 @@ metadata:
 
 | Model | Max Input | Languages | Features |
 |-------|-----------|-----------|----------|
-| `sarvam-translate:v1` | 2,000 chars | 22 languages | Formal style, `numerals_format` |
-| `mayura:v1` | 1,000 chars | 11 languages | `mode`, `output_script`, `speaker_gender` |
+| `sarvam-translate:v1` | 2,000 chars | 23 (22 Indian + English) | `mode` (`formal` only), `speaker_gender`, `numerals_format` |
+| `mayura:v1` | 1,000 chars | 11 (10 Indian + English) | All `mode` values, `output_script`, `speaker_gender`, `numerals_format`, auto source detection |
 
 ## Quick Start (Python)
 
@@ -55,8 +55,9 @@ console.log(response.translated_text);
 | Gotcha | Detail |
 |--------|--------|
 | **Method name** | Both Python & JS: `client.text.translate({...})` — NOT `client.translate.translate()`. Same `text` namespace in both SDKs. |
-| **`output_script` on sarvam-translate** | NOT supported — only works with `mayura:v1`. Silently ignored on `sarvam-translate:v1`. |
-| **`mode`/`speaker_gender`** | Only work with `mayura:v1`. `sarvam-translate:v1` only supports `formal` style + `numerals_format`. |
+| **`output_script` on sarvam-translate** | NOT supported — only works with `mayura:v1` (`roman`, `fully-native`, `spoken-form-in-native`). Silently ignored on `sarvam-translate:v1`. |
+| **`mode` values** | `sarvam-translate:v1` supports `formal` only. Colloquial modes (`modern-colloquial`, `classic-colloquial`, `code-mixed`) are `mayura:v1` only. `speaker_gender` works on BOTH models. |
+| **Auto language detection** | `source_language_code="auto"` only works with `mayura:v1`. `sarvam-translate:v1` requires an explicit source language. |
 | **Odia language code** | `od-IN` — NOT `or-IN`. |
 | **Character limits** | Exceeding returns 422. Split long text at sentence boundaries. |
 
@@ -65,5 +66,5 @@ console.log(response.translated_text);
 Fetch language codes, mode examples, script options, and numeral formats from:
 
 - **https://docs.sarvam.ai/llms.txt** — comprehensive docs index
-- [Translation Guide](https://docs.sarvam.ai/api-reference-docs/api-guides-tutorials/text-processing/translation)
-- [Rate Limits](https://docs.sarvam.ai/api-reference-docs/ratelimits)
+- [Translation Guide](https://docs.sarvam.ai/api/api-guides-tutorials/text-processing/translation)
+- [Rate Limits](https://docs.sarvam.ai/api/ratelimits)

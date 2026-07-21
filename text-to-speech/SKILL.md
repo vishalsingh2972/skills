@@ -1,10 +1,10 @@
 ---
 name: text-to-speech
-description: Convert text to natural speech using Sarvam AI's Bulbul v3 model. Handles audio generation, voiceovers, and voice interfaces for 11 Indian languages with 30+ voices. Supports REST, HTTP streaming, WebSocket, and pronunciation dictionaries. Use when generating spoken audio from text.
+description: Convert text to natural speech using Sarvam AI's Bulbul v3 model. Handles audio generation, voiceovers, and voice interfaces for 11 languages with 37 voices. Supports REST, HTTP streaming, WebSocket, and pronunciation dictionaries. Use when generating spoken audio from text.
 license: Apache-2.0
 metadata:
   author: sarvam-ai
-  version: "3.0"
+  version: "3.1"
 ---
 
 # Text-to-Speech — Bulbul
@@ -14,7 +14,7 @@ metadata:
 
 ## Model
 
-`bulbul:v3` — 11 languages, 30+ voices (default: `shubh`), REST/HTTP stream/WebSocket.
+`bulbul:v3` — 11 languages, 37 voices (23 male, 14 female; default: `shubh`), REST/HTTP stream/WebSocket.
 
 ## Quick Start (Python)
 
@@ -95,7 +95,7 @@ asyncio.run(tts_stream())
 |--------|----------|
 | **REST** (`convert`) | 2,500 chars |
 | **HTTP Stream** (`convert_stream`) | 3,500 chars |
-| **WebSocket** | 2,500 chars/msg |
+| **WebSocket** | 2,500 chars/msg (keep <500 for lowest latency; send many messages per connection) |
 
 ## Gotchas
 
@@ -106,15 +106,17 @@ asyncio.run(tts_stream())
 | **v2 voices incompatible** | `anushka`, `abhilash`, `arya`, etc. don't work with v3. Use `shubh` (default). |
 | **Sample rate >24kHz** | 32kHz, 44.1kHz, 48kHz only via REST, not streaming. |
 | **REST response** | Base64-encoded audio in `response.audios[0]`. Use `sarvamai.play.save()` or `base64.b64decode()`. |
-| **Pronunciation dictionary** | `dict_id` param teaches custom word pronunciations. Create via `client.pronunciation_dictionary.create(file=f)`. |
+| **No SSML** | SSML markup is NOT supported. Use `pace` for speed control and the pronunciation dictionary for word-level fixes. |
+| **Use native script** | Romanized Indic input ("Aapka order confirm ho gaya hai") degrades quality. Write Indic words in native script. |
+| **Pronunciation dictionary** | `dict_id` param teaches custom word pronunciations (bulbul:v3 only; 10 dicts/user, 100 words/dict). Create via Python `client.pronunciation_dictionary.create(file=f)`. JS SDK upload is broken (missing multipart `Content-Type`) — use raw `fetch` + `FormData` with an explicit `Blob` type. |
 
 ## Full Docs
 
 Fetch voice catalog, streaming protocol, pronunciation dictionary CRUD, and codec options from:
 
 - **https://docs.sarvam.ai/llms.txt** — comprehensive docs index
-- [TTS Overview](https://docs.sarvam.ai/api-reference-docs/api-guides-tutorials/text-to-speech/overview)
-- [Voice Catalog](https://docs.sarvam.ai/api-reference-docs/api-guides-tutorials/text-to-speech/how-to/change-the-speaker-voice)
-- [HTTP Stream](https://docs.sarvam.ai/api-reference-docs/api-guides-tutorials/text-to-speech/streaming-api/http-stream)
-- [Pronunciation Dictionary](https://docs.sarvam.ai/api-reference-docs/api-guides-tutorials/text-to-speech/pronunciation-dictionary)
-- [Rate Limits](https://docs.sarvam.ai/api-reference-docs/ratelimits)
+- [TTS Overview](https://docs.sarvam.ai/api/api-guides-tutorials/text-to-speech/overview)
+- [Voice Catalog](https://docs.sarvam.ai/api/api-guides-tutorials/text-to-speech/how-to/change-the-speaker-voice)
+- [HTTP Stream](https://docs.sarvam.ai/api/api-guides-tutorials/text-to-speech/streaming-api/http-stream)
+- [Pronunciation Dictionary](https://docs.sarvam.ai/api/api-guides-tutorials/text-to-speech/pronunciation-dictionary)
+- [Rate Limits](https://docs.sarvam.ai/api/ratelimits)

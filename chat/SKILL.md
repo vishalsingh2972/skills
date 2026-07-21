@@ -4,7 +4,7 @@ description: Chat completions using Sarvam AI LLMs (Sarvam-105B, Sarvam-30B). Ha
 license: Apache-2.0
 metadata:
   author: sarvam-ai
-  version: "3.0"
+  version: "3.1"
 ---
 
 # Chat Completions — Sarvam AI
@@ -18,8 +18,8 @@ metadata:
 |-------|---------|----------|
 | `sarvam-105b` | 128K | Complex reasoning, coding, agentic workflows |
 | `sarvam-30b` | 64K | Real-time chat, voice agents, conversational AI |
-| `sarvam-105b-32k` | 32K | Cost-efficient 105B |
-| `sarvam-30b-16k` | 16K | Cost-efficient 30B |
+
+The fixed-context variants (`sarvam-105b-32k`, `sarvam-30b-16k`) are retired — base models serve their full context window directly.
 
 ## Quick Start (Python)
 
@@ -74,14 +74,14 @@ response = client.chat.completions.create(model="sarvam-30b", messages=[...])
 |--------|--------|
 | **SDK method** | Python: `client.chat.completions(...)`, JS: `client.chat.completions({...})` — no `.create()` in either. OpenAI SDK uses `.create()` as usual. |
 | **JS constructor** | `new SarvamAIClient({ apiSubscriptionKey: "..." })` — NOT `SarvamAI()`. Key is passed explicitly. |
-| **`content` can be `None`** | Models produce `reasoning_content` before `content`. If `max_tokens` is too low, reasoning consumes the budget and `content` is `None`. Omit `max_tokens` or set 500+. Check `reasoning_content` as fallback. |
-| **reasoning_effort** | `reasoning_effort="low"\|"medium"\|"high"` for thinking mode. NOT `thinking=True`. |
+| **`content` can be `None`** | Models produce `reasoning_content` before `content`. If `max_tokens` is too low, reasoning consumes the budget, `finish_reason` is `"length"`, and `content` is `None`. Omit `max_tokens`, set 500+, or disable reasoning with `reasoning_effort=None`. Check `reasoning_content` as fallback. |
+| **reasoning_effort** | Thinking is **on by default** at `"low"`. Values: `"low"\|"medium"\|"high"`, or `None` to disable reasoning entirely. NOT `thinking=True`. Reasoning tokens count toward completion tokens and billing. |
 
 ## Full Docs
 
 Fetch detailed parameters, tool calling, streaming, and examples from:
 
 - **https://docs.sarvam.ai/llms.txt** — comprehensive docs index
-- [Chat Completion Guide](https://docs.sarvam.ai/api-reference-docs/api-guides-tutorials/chat-completion/overview)
-- [Model Specs](https://docs.sarvam.ai/api-reference-docs/getting-started/models)
-- [Rate Limits](https://docs.sarvam.ai/api-reference-docs/ratelimits)
+- [Chat Completion Guide](https://docs.sarvam.ai/api/api-guides-tutorials/chat-completion/overview)
+- [Model Specs](https://docs.sarvam.ai/api/getting-started/models)
+- [Rate Limits](https://docs.sarvam.ai/api/ratelimits)
