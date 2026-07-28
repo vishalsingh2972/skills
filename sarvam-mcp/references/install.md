@@ -1,30 +1,38 @@
-# Install Sarvam MCP in any harness
+# Install sarvam-mcp
 
-Server runs locally over **stdio** — the client spawns it. Nothing to host.
+Read this when MCP is missing, the user asks to set up Sarvam, or a client needs a config path.
 
-## Before you start
+Server is local **stdio** — the client spawns it. Full canonical docs: [sarvam-mcp INSTALLATION.md](https://github.com/sarvamai/sarvam-mcp/blob/main/docs/INSTALLATION.md).
 
-1. API key from [dashboard.sarvam.ai/key-management](https://dashboard.sarvam.ai/key-management) (`sk_...`).
-2. Run method:
+## Setup checklist
 
-| Method | Config | Prerequisite |
-|--------|--------|--------------|
-| **uvx** (recommended) | `"command": "uvx", "args": ["sarvam-mcp"]` | [uv](https://docs.astral.sh/uv/) |
-| **pip** | `"command": "sarvam-mcp"` | Python 3.11+, `pip install sarvam-mcp` |
+```
+- [ ] API key from https://dashboard.sarvam.ai/key-management (`sk_...`)
+- [ ] Runner: uvx (preferred) or pip install sarvam-mcp (Python 3.11+)
+- [ ] Auth in client env OR ~/.sarvam/credentials
+- [ ] Client config added / reloaded
+- [ ] Verify with a live translate or /mcp / tools list
+```
 
-3. Auth — either config `env.SARVAM_API_KEY` **or** once in `~/.sarvam/credentials`:
+### Auth (pick one)
+
+**A. Credentials file** (works across clients; omit `env` from JSON):
 
 ```ini
+# ~/.sarvam/credentials
 api_key = sk_...
 ```
 
-Env var wins if both are set. With the credentials file you can omit `env` from JSON.
+**B. Client env:** `"env": { "SARVAM_API_KEY": "sk_..." }` — wins if both set.
 
-Canonical package docs: [github.com/sarvamai/sarvam-mcp](https://github.com/sarvamai/sarvam-mcp) → `docs/INSTALLATION.md`.
+### Runner
 
-## Shared JSON shape
+| Method | `command` / args | Need |
+|--------|------------------|------|
+| uvx | `"command": "uvx", "args": ["sarvam-mcp"]` | [uv](https://docs.astral.sh/uv/) |
+| pip | `"command": "sarvam-mcp"` | `pip install sarvam-mcp` |
 
-Most clients use:
+## Shared config (most clients)
 
 ```json
 {
@@ -38,34 +46,23 @@ Most clients use:
 }
 ```
 
-## Cursor
+## Per client
 
-- One-click: [Add to Cursor](https://cursor.com/install-mcp?name=sarvam&config=eyJjb21tYW5kIjoidXZ4IiwiYXJncyI6WyJzYXJ2YW0tbWNwIl19)
-- Manual: `~/.cursor/mcp.json` or project `.cursor/mcp.json` (shape above)
-- Verify: Settings → MCP → **sarvam** green + tool list
+| Client | Where / how |
+|--------|-------------|
+| **Cursor** | One-click: [Add to Cursor](https://cursor.com/install-mcp?name=sarvam&config=eyJjb21tYW5kIjoidXZ4IiwiYXJncyI6WyJzYXJ2YW0tbWNwIl19). Manual: `~/.cursor/mcp.json` or `.cursor/mcp.json`. Verify: Settings → MCP → green **sarvam**. |
+| **Claude Code** | `claude mcp add --scope user sarvam --env SARVAM_API_KEY=sk_... -- uvx sarvam-mcp` → verify `/mcp` |
+| **Claude Desktop** | macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`. Windows: `%APPDATA%\Claude\claude_desktop_config.json`. Same JSON; full quit/reopen. |
+| **VS Code Copilot** | `code --add-mcp '{"name":"sarvam","command":"uvx","args":["sarvam-mcp"],"env":{"SARVAM_API_KEY":"sk_..."}}'` **or** `.vscode/mcp.json` with top-level key `servers` (not `mcpServers`) |
+| **Windsurf** | `~/.codeium/windsurf/mcp_config.json` → Refresh Cascade MCP |
+| **Zed** | `settings.json` → `context_servers.sarvam.command` = `{ "path": "uvx", "args": ["sarvam-mcp"], "env": { "SARVAM_API_KEY": "sk_..." } }` |
+| **Codex CLI** | `codex mcp add sarvam --env SARVAM_API_KEY=sk_... -- uvx sarvam-mcp` or `~/.codex/config.toml` `[mcp_servers.sarvam]` |
+| **Gemini CLI** | `gemini mcp add sarvam -e SARVAM_API_KEY=sk_... uvx sarvam-mcp` |
+| **Cline / Roo** | Extension MCP settings → shared JSON above |
+| **Continue** | `~/.continue/config.yaml` → `mcpServers` list with `command: uvx`, `args: [sarvam-mcp]` |
+| **LM Studio** | Program → Install → Edit mcp.json → shared JSON → enable |
 
-## Claude Code
-
-```bash
-claude mcp add --scope user sarvam --env SARVAM_API_KEY=sk_... -- uvx sarvam-mcp
-```
-
-Verify: `/mcp` shows **sarvam** connected.
-
-## Claude Desktop
-
-- macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
-- Windows: `%APPDATA%\Claude\claude_desktop_config.json`
-
-Same `mcpServers` block. Fully quit and reopen the app.
-
-## VS Code (Copilot)
-
-```bash
-code --add-mcp '{"name":"sarvam","command":"uvx","args":["sarvam-mcp"],"env":{"SARVAM_API_KEY":"sk_..."}}'
-```
-
-Or `.vscode/mcp.json` with top-level key **`servers`** (not `mcpServers`):
+### VS Code `servers` shape
 
 ```json
 {
@@ -79,35 +76,7 @@ Or `.vscode/mcp.json` with top-level key **`servers`** (not `mcpServers`):
 }
 ```
 
-## Windsurf
-
-`~/.codeium/windsurf/mcp_config.json` — same `mcpServers` block → Refresh in Cascade MCP panel.
-
-## Zed
-
-`settings.json`:
-
-```json
-{
-  "context_servers": {
-    "sarvam": {
-      "command": {
-        "path": "uvx",
-        "args": ["sarvam-mcp"],
-        "env": { "SARVAM_API_KEY": "sk_..." }
-      }
-    }
-  }
-}
-```
-
-## Codex CLI
-
-```bash
-codex mcp add sarvam --env SARVAM_API_KEY=sk_... -- uvx sarvam-mcp
-```
-
-Or `~/.codex/config.toml`:
+### Codex TOML
 
 ```toml
 [mcp_servers.sarvam]
@@ -116,50 +85,29 @@ args = ["sarvam-mcp"]
 env = { SARVAM_API_KEY = "sk_..." }
 ```
 
-## Gemini CLI
-
-```bash
-gemini mcp add sarvam -e SARVAM_API_KEY=sk_... uvx sarvam-mcp
-```
-
-## Cline / Roo Code
-
-Extension MCP settings → same `mcpServers` JSON as Cursor.
-
-## Continue
-
-`~/.continue/config.yaml`:
+### Continue YAML
 
 ```yaml
 mcpServers:
   - name: sarvam
     command: uvx
-    args:
-      - sarvam-mcp
+    args: [sarvam-mcp]
     env:
       SARVAM_API_KEY: sk_...
 ```
-
-## LM Studio
-
-Program → Install → Edit `mcp.json` → same `mcpServers` block → enable server.
 
 ## Verify
 
 Ask: *Translate "good morning" to Hindi using Sarvam.*
 
-Or outside a client:
-
-```bash
-npx @modelcontextprotocol/inspector uvx sarvam-mcp
-```
+Or: `npx @modelcontextprotocol/inspector uvx sarvam-mcp`
 
 ## Troubleshooting
 
 | Symptom | Fix |
 |---------|-----|
-| `uvx` / `sarvam-mcp` not found | Install uv, or use absolute path from `pip show -f sarvam-mcp`; restart client for PATH |
-| Auth errors | Check `SARVAM_API_KEY` or `~/.sarvam/credentials`; call `sarvam_tools_set_api_key` |
+| `uvx` / `sarvam-mcp` not found | Install uv, or absolute path from `pip show -f sarvam-mcp`; restart client |
+| Auth errors | Check env or `~/.sarvam/credentials`; then `sarvam_tools_set_api_key` |
 | Server "hangs" in a terminal | Expected for stdio — let the client spawn it |
-| Slow first `uvx` call | Cold download; pre-warm: `uv tool install sarvam-mcp` |
+| Slow first uvx run | Cold download; `uv tool install sarvam-mcp` |
 | Stale package | `uvx sarvam-mcp@latest` or `pip install -U sarvam-mcp` |

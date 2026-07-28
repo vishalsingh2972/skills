@@ -26,13 +26,13 @@ The [vibe-coding](./vibe-coding) skill is **stack- and vendor-agnostic**—it is
 
 | Skill | Description |
 |-------|-------------|
-| [sarvam-mcp](./sarvam-mcp) | **MCP (any harness)** — route `sarvam_tools_*` (runtime) vs `sarvam_code_*` (build-time), auth, workflows (voice/dub/localize/recall), and client install. Use when Sarvam MCP is connected or the user wants live STT/TTS/translate in chat. |
-| [chat](./chat) | Chat completions with Sarvam-105B/30B. Python & JS/TS quick starts, streaming, reasoning mode, OpenAI-compatible path, and the `content=None` gotcha. |
-| [speech-to-text](./speech-to-text) | Audio transcription with Saaras v3. Python & JS/TS quick starts, Batch API (long audio + diarization), and WebSocket streaming for 23 languages. |
-| [text-to-speech](./text-to-speech) | Speech synthesis with Bulbul v3. Python & JS/TS quick starts, HTTP stream, WebSocket, pronunciation dictionaries, and unsupported parameter warnings. |
-| [translate](./translate) | Text translation with Sarvam-Translate v1 and Mayura v1. Python & JS/TS quick starts, model feature differences, and silent parameter failures. |
-| [voice-agents](./voice-agents) | Real-time voice agents with LiveKit and Pipecat (Python). JS/TS SDK reference for custom pipelines. |
-| [vibe-coding](./vibe-coding) | **Vendor-neutral** vibe coding: small steps, verification, skills over long prompts, and separating UI from API layers. For any stack. No SDK signatures—pair with domain or provider skills when you need them. |
+| [sarvam-mcp](./sarvam-mcp) | **MCP (any harness)** — live `sarvam_tools_*` vs build-time `sarvam_code_*`, composites, auth, install. Use for in-chat Sarvam actions. |
+| [chat](./chat) | **SDK** — Sarvam-105B/30B completions, streaming, reasoning, `content=None` gotcha. |
+| [speech-to-text](./speech-to-text) | **SDK** — Saaras v3 REST, Batch + diarization, WebSocket streaming. |
+| [text-to-speech](./text-to-speech) | **SDK** — Bulbul v3 REST/stream/WebSocket, pronunciation dicts, v3 param traps. |
+| [translate](./translate) | **SDK** — Mayura / Sarvam-Translate signatures and silent failures. |
+| [voice-agents](./voice-agents) | **SDK** — LiveKit / Pipecat real-time voice agents. |
+| [vibe-coding](./vibe-coding) | **Vendor-neutral** agent habits (slice → verify → iterate). Pair with a domain skill for APIs. |
 
 ## Installation
 

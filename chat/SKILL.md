@@ -1,15 +1,20 @@
 ---
 name: chat
-description: Chat completions using Sarvam AI LLMs (Sarvam-105B, Sarvam-30B). Handles AI chat, text generation, reasoning, coding, and multilingual conversations in Indian languages. OpenAI-compatible API. Use when building chatbots, Q&A systems, agents, or any LLM feature targeting Indian users.
+description: >-
+  Write correct Sarvam AI chat-completion code (Sarvam-105B, Sarvam-30B) —
+  OpenAI-compatible API, streaming, reasoning mode, and the content=None
+  gotcha. Use this skill when building chatbots, Q&A, agents, or Indic LLM
+  features in Python or JS/TS. For a live completion in chat via MCP, use
+  sarvam-mcp instead.
 license: Apache-2.0
 metadata:
   author: sarvam-ai
-  version: "3.1"
+  version: "3.2"
 ---
 
 # Chat Completions — Sarvam AI
 
-> Prefer the [sarvam-mcp](../sarvam-mcp) skill + `sarvam_tools_llm_complete` when the user wants a **live** completion in chat. This skill is for **writing SDK code**.
+> Live in-chat completion → [sarvam-mcp](../sarvam-mcp) (`sarvam_tools_llm_complete`). This skill = **SDK code**.
 
 > [!IMPORTANT]
 > Auth: `api-subscription-key` header — NOT `Authorization: Bearer`. Base URL: `https://api.sarvam.ai/v1`

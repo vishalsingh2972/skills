@@ -1,15 +1,19 @@
 ---
 name: text-to-speech
-description: Convert text to natural speech using Sarvam AI's Bulbul v3 model. Handles audio generation, voiceovers, and voice interfaces for 11 languages with 37 voices. Supports REST, HTTP streaming, WebSocket, and pronunciation dictionaries. Use when generating spoken audio from text.
+description: >-
+  Write correct Sarvam Bulbul TTS code — REST, HTTP stream, WebSocket,
+  pronunciation dictionaries, and v3 parameter traps (pitch/loudness,
+  speaker compatibility). Use this skill when generating speech in an app
+  with Python or JS/TS. For live TTS in chat via MCP, use sarvam-mcp instead.
 license: Apache-2.0
 metadata:
   author: sarvam-ai
-  version: "3.1"
+  version: "3.2"
 ---
 
 # Text-to-Speech — Bulbul
 
-> Prefer the [sarvam-mcp](../sarvam-mcp) skill + `sarvam_tools_tts_*` when the user wants **live** speech synthesis in chat. This skill is for **writing SDK code**.
+> Live in-chat TTS → [sarvam-mcp](../sarvam-mcp) (`sarvam_tools_tts_*`). This skill = **SDK code**.
 
 > [!IMPORTANT]
 > Auth: `api-subscription-key` header — NOT `Authorization: Bearer`. Base URL: `https://api.sarvam.ai/v1`

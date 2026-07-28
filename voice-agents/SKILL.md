@@ -1,15 +1,19 @@
 ---
 name: voice-agents
-description: Build conversational voice agents using Sarvam AI with LiveKit or Pipecat. Handles voice assistants, phone bots, IVR, and real-time conversational AI for Indian languages. Integrates Sarvam STT (Saaras v3), TTS (Bulbul v3), and LLM (Sarvam-30B) with low-latency streaming. Use when creating voice-enabled applications or real-time speech pipelines.
+description: >-
+  Build real-time Indic voice agents with Sarvam STT/TTS/LLM on LiveKit or
+  Pipecat (Python), plus JS/TS custom-pipeline notes. Use this skill when
+  creating phone bots, IVR, or always-on conversational voice apps. For
+  one-shot in-chat voice reply or dubbing via MCP, use sarvam-mcp instead.
 license: Apache-2.0
 metadata:
   author: sarvam-ai
-  version: "3.1"
+  version: "3.2"
 ---
 
 # Voice Agents — Sarvam AI
 
-> For one-shot in-chat voice (STT→LLM→TTS / dubbing), use [sarvam-mcp](../sarvam-mcp) (`sarvam_tools_voice`, `sarvam_tools_dub`). This skill is for **building** LiveKit/Pipecat agents in code.
+> One-shot in-chat voice/dub → [sarvam-mcp](../sarvam-mcp) (`sarvam_tools_voice` / `_dub`). This skill = **LiveKit/Pipecat agent code**.
 
 > [!IMPORTANT]
 > Auth: `api-subscription-key` header — NOT `Authorization: Bearer`. Env var: `SARVAM_API_KEY`

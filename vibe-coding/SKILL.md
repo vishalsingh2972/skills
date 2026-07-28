@@ -1,11 +1,16 @@
 ---
 name: vibe-coding
 description: >-
-  Universal habits for building with an AI agent: small iterations, verification, lean domain skills instead of long prompts, and keeping stack concerns separate. For any language, framework, or API. Use when vibe coding, scoping work, or keeping an agent disciplined—not for library-specific API signatures (use a domain skill or official docs for those).
+  Keep an agent disciplined while vibe coding: small shippable slices,
+  verify before done, prefer lean skills over long prompts, and separate UI
+  from API layers. Use this skill when scoping work, starting a vibe-coding
+  session, or the agent is thrashing — for any stack. Not for Sarvam API
+  signatures (use sarvam-mcp, translate, speech-to-text, text-to-speech, chat,
+  or voice-agents).
 license: Apache-2.0
 metadata:
   author: sarvam-ai
-  version: "2.0"
+  version: "2.1"
 ---
 
 # Vibe coding

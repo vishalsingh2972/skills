@@ -1,15 +1,19 @@
 ---
 name: translate
-description: Translate text between English and Indian languages using Sarvam AI (Sarvam-Translate, Mayura). Handles content translation and app localization across 22+ languages with mode control, script options, and numeral formats. Use when translating or localizing content for Indian users.
+description: >-
+  Write correct Sarvam translation code (sarvam-translate:v1, mayura:v1) —
+  mode/script/numeral options and silent parameter failures. Use this skill
+  when building translation or localization features in Python or JS/TS. For
+  live translate/localize in chat via MCP, use sarvam-mcp instead.
 license: Apache-2.0
 metadata:
   author: sarvam-ai
-  version: "3.1"
+  version: "3.2"
 ---
 
 # Translation — Sarvam AI
 
-> Prefer the [sarvam-mcp](../sarvam-mcp) skill + `sarvam_tools_translate` / `sarvam_tools_localize` when the user wants a **live** translation in chat. This skill is for **writing SDK code**.
+> Live in-chat translate/localize → [sarvam-mcp](../sarvam-mcp) (`sarvam_tools_translate` / `_localize`). This skill = **SDK code**.
 
 > [!IMPORTANT]
 > Auth: `api-subscription-key` header — NOT `Authorization: Bearer`. Base URL: `https://api.sarvam.ai/v1`

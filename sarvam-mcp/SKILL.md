@@ -1,133 +1,163 @@
 ---
 name: sarvam-mcp
 description: >-
-  Use the Sarvam MCP server (sarvam-mcp) from any agent harness to run Indic
-  speech and language tasks live — STT, TTS, translate, transliterate, LLM,
-  vision, dubbing, localization — or to fetch Sarvam API docs and snippets
-  while writing code. Use when Sarvam MCP is connected, when the user asks to
-  translate/transcribe/speak/dub/localize Indian-language content in-chat, or
-  when setting up MCP for Cursor, Claude Code, Claude Desktop, Windsurf, Zed,
-  Codex, Gemini CLI, VS Code, Cline, Continue, or LM Studio.
+  Run Indic speech and language tasks through the Sarvam MCP server: translate
+  text, transcribe or dub audio, TTS, localize i18n files, LLM complete, vision
+  extract, or fetch Sarvam API docs/snippets while coding. Use this skill when
+  the user wants Sarvam to act in chat, when sarvam_tools_* / sarvam_code_* are
+  available, or when setting up sarvam-mcp in Cursor, Claude Code, Claude
+  Desktop, Windsurf, Zed, Codex, Gemini CLI, VS Code, Cline, Continue, or LM
+  Studio — even if they only say "translate this to Hindi" or "make it speak."
+  Do not use for LiveKit/Pipecat agent code (voice-agents) or SDK-only coding
+  when MCP is not installed (translate, speech-to-text, text-to-speech, chat).
 license: Apache-2.0
-compatibility: Requires the sarvam-mcp MCP server connected in the agent client (or install via uvx/pip). Network access to api.sarvam.ai.
+compatibility: Requires sarvam-mcp connected (or installable via uvx/pip) and network access to api.sarvam.ai.
 metadata:
   author: sarvam-ai
-  version: "1.0"
+  version: "2.0"
 ---
 
 # Sarvam MCP
 
-Harness-agnostic guide for the official [sarvam-mcp](https://github.com/sarvamai/sarvam-mcp) server. Prefer these MCP tools over inventing HTTP/SDK calls when the user wants Sarvam to **do something now**.
+Drive [sarvam-mcp](https://github.com/sarvamai/sarvam-mcp). Prefer MCP tools over inventing HTTP/SDK calls for live work.
 
-> [!IMPORTANT]
-> Two namespaces — pick the right one before every call:
->
-> | Namespace | When | Examples |
-> |-----------|------|----------|
-> | `sarvam_tools_*` | **Runtime** — call Sarvam APIs live | "Translate this to Tamil", "Transcribe this audio", "Say this in Hindi" |
-> | `sarvam_code_*` | **Build-time** — help write code / look up APIs | "How do I call TTS from Python?", "Which STT languages?" |
->
-> Decision: **use Sarvam now** → `sarvam_tools_*`. **Write code that uses Sarvam** → `sarvam_code_*`.
+## Procedure
 
-For SDK-only coding without MCP, use the sibling skills: [translate](../translate), [speech-to-text](../speech-to-text), [text-to-speech](../text-to-speech), [chat](../chat), [voice-agents](../voice-agents).
+Copy and track:
 
-## Prerequisites
+```
+- [ ] 1. MCP available? If no → read references/install.md (or fall back to SDK skills)
+- [ ] 2. Namespace: live action → sarvam_tools_*; write/lookup code → sarvam_code_*
+- [ ] 3. Prefer a composite if the task spans STT/translate/TTS/LLM
+- [ ] 4. Call the tool (absolute paths; BCP-47 codes)
+- [ ] 5. On auth error → sarvam_tools_set_api_key; on param error → fix and retry
+- [ ] 6. Return the result path/text; mention observability only if debugging
+```
 
-1. MCP server connected as `sarvam` (or equivalent) — see [references/install.md](references/install.md).
-2. API key: `SARVAM_API_KEY` in client config, or `~/.sarvam/credentials` (`api_key = sk_...`).
-3. Key from [dashboard.sarvam.ai/key-management](https://dashboard.sarvam.ai/key-management).
+### 1. Namespace (mandatory)
 
-Auth header on the wire is `api-subscription-key` — never invent `Authorization: Bearer`.
+| User wants… | Namespace | Example |
+|-------------|-----------|---------|
+| Sarvam to **do it now** | `sarvam_tools_*` | "Translate this to Tamil" |
+| Help **writing code** / API facts | `sarvam_code_*` | "How do I call TTS from Python?" |
 
-### Auth errors
+Never use `sarvam_code_*` for a live translate/TTS/STT request. Never burn `sarvam_tools_*` credits just to draft code unless the user asked for a live demo.
 
-If any tool returns auth failure:
+### 2. Pick the tool (defaults)
 
-1. Call `sarvam_tools_set_api_key` with no args → get dashboard link.
-2. Call again with the pasted `sk_...` key → saved to `~/.sarvam/credentials`.
+**Composites first** — do not hand-chain STT → translate → TTS:
 
-## Intent → tool (runtime)
+| Task | Tool |
+|------|------|
+| Spoken reply to audio | `sarvam_tools_voice` |
+| Dub into another Indic language | `sarvam_tools_dub` |
+| Localize JSON/YAML/PO/etc. | `sarvam_tools_localize` |
+| Q&A / summary over audio | `sarvam_tools_recall` |
 
-| User intent | Tool |
-|-------------|------|
-| Transcribe audio | `sarvam_tools_stt_transcribe` |
-| Speech → English text | `sarvam_tools_stt_translate` |
-| Long audio / diarization | `sarvam_tools_stt_batch_submit` → `sarvam_tools_stt_batch_status` |
-| Speak text (TTS) | `sarvam_tools_tts_speak` (or `_tts_stream`) |
+**Atomic runtime** (use when no composite fits):
+
+| Task | Tool |
+|------|------|
+| Transcribe | `sarvam_tools_stt_transcribe` |
+| Speech → English | `sarvam_tools_stt_translate` |
+| Audio >~30s / diarization | `sarvam_tools_stt_batch_submit` → `_stt_batch_status` |
+| Speak text | `sarvam_tools_tts_speak` |
 | Translate text | `sarvam_tools_translate` |
-| Script conversion | `sarvam_tools_transliterate` |
-| Detect language | `sarvam_tools_identify_language` |
-| Chat / complete | `sarvam_tools_llm_complete` |
-| Document → structured text | `sarvam_tools_vision_extract` (+ `_vision_job_status`) |
-| Audio in → spoken reply | `sarvam_tools_voice` |
-| Dub audio to another Indic lang | `sarvam_tools_dub` |
-| Localize i18n JSON/YAML/etc. | `sarvam_tools_localize` |
-| Summarize / Q&A over audio | `sarvam_tools_recall` |
-| Pronunciation dictionary CRUD | `sarvam_tools_pronunciation_*` |
+| Transliterate / LID / analytics | `sarvam_tools_transliterate` / `_identify_language` / `_text_analytics` |
+| Chat complete | `sarvam_tools_llm_complete` |
+| Document intelligence | `sarvam_tools_vision_extract` → `_vision_job_status` |
+| Pronunciation dicts | `sarvam_tools_pronunciation_*` |
+| Set / rotate API key | `sarvam_tools_set_api_key` |
 
-Full parameter notes: [references/tools.md](references/tools.md).
+**Build-time** (coding help):
 
-## Intent → tool (build-time)
+| Task | Tool |
+|------|------|
+| Unsure which model/lang | `sarvam_code_recommend_model` |
+| Endpoint shape | `sarvam_code_api_reference` |
+| Snippet | `sarvam_code_snippet` |
+| Speakers / languages | `sarvam_code_speakers` / `_languages` |
+| Validate draft body | `sarvam_code_validate_request` |
+| Docs search / pricing | `sarvam_code_search_docs` / `_pricing` |
 
-| User intent | Tool |
-|-------------|------|
-| Search docs | `sarvam_code_search_docs` |
-| Endpoint request/response shape | `sarvam_code_api_reference` |
-| Language coverage by API | `sarvam_code_languages` |
-| TTS speakers for a model | `sarvam_code_speakers` |
-| Copy-paste snippet | `sarvam_code_snippet` |
-| Recommend model + lang | `sarvam_code_recommend_model` |
-| Validate draft request body | `sarvam_code_validate_request` |
-| Pricing structure | `sarvam_code_pricing` |
+Coding flow: `recommend_model` → `snippet` or `api_reference` → `validate_request`.
 
-When writing an integration: `recommend_model` → `api_reference` / `snippet` → `validate_request` before the user ships.
+For parameters and env knobs, read [references/tools.md](references/tools.md).
 
-## Workflows (prefer composites)
+### 3. Defaults (use unless user overrides)
 
-Do **not** hand-chain STT → translate → TTS when a composite exists:
+| Setting | Default |
+|---------|---------|
+| STT model | `saaras:v3` |
+| TTS model / speaker | `bulbul:v3` / `priya` |
+| LLM | `sarvam-30b` (use `sarvam-105b` for hard reasoning) |
+| Translate model | `mayura:v1` (switch to `sarvam-translate:v1` for broader Indic coverage) |
+| Audio path | Absolute local path |
+| Language codes | BCP-47 (`hi-IN`, `ta-IN`, **`od-IN`** not `or-IN`) |
 
-| Workflow | Pipeline | Tool |
-|----------|----------|------|
-| Voice reply | STT → LLM → TTS | `sarvam_tools_voice` |
-| Dubbing | STT → Translate → TTS | `sarvam_tools_dub` |
-| i18n file | Translate string table | `sarvam_tools_localize` |
-| Recall | STT → LLM summary/Q&A | `sarvam_tools_recall` |
+### 4. Auth
 
-## Agent checklist
+Key sources (env wins): `SARVAM_API_KEY`, or `~/.sarvam/credentials` (`api_key = sk_...`).
 
-```
-- [ ] MCP connected? If not → install (references/install.md) or fall back to SDK skills
-- [ ] Runtime vs build-time namespace chosen
-- [ ] Auth OK (or sarvam_tools_set_api_key)
-- [ ] Prefer composite workflow tools over manual chains
-- [ ] Absolute paths for local audio/files
-- [ ] Language codes BCP-47 (`hi-IN`, `od-IN` not `or-IN`)
-- [ ] Surface result paths / transcripts; mention observability if useful
-```
+Dashboard: https://dashboard.sarvam.ai/key-management
+
+On auth failure:
+
+1. `sarvam_tools_set_api_key` with empty `api_key` → instructions + link
+2. Call again with `sk_...` → persists to `~/.sarvam/credentials`
+
+Wire auth is `api-subscription-key` — never invent `Authorization: Bearer`.
+
+## Examples
+
+**Live translate**
+
+User: "Translate 'Good morning' to Hindi."
+
+→ `sarvam_tools_translate` with `input`, `source_language_code=en-IN`, `target_language_code=hi-IN`. Return `translated_text`.
+
+**Live TTS**
+
+User: "Say नमस्ते in Hindi."
+
+→ `sarvam_tools_tts_speak` with native-script text, `target_language_code=hi-IN`, `speaker=priya`. Return the audio path.
+
+**Dub**
+
+User: "Dub this clip into Tamil" + path.
+
+→ `sarvam_tools_dub` with `audio_path`, `target_language_code=ta-IN` — not STT + translate + TTS separately.
+
+**Code help**
+
+User: "Show a Python TTS example."
+
+→ `sarvam_code_snippet` with `api=tts`, `language=python` (not `sarvam_tools_tts_speak` unless they want audio now).
 
 ## Gotchas
 
-| Gotcha | Detail |
-|--------|--------|
-| **Wrong namespace** | Runtime asks must not use `sarvam_code_*`. Code-writing must not burn credits on `sarvam_tools_*` unless the user wants a live demo. |
-| **Tool name prefix** | Live tools are `sarvam_tools_*` / `sarvam_code_*`. Older docs may omit `_tools` / `_code` — always match the connected server's tool list. |
-| **REST STT ~30s** | Longer audio → batch tools (`stt_batch_*`) or ask the user to split. |
-| **TTS langs ⊂ STT langs** | STT ~23 langs; TTS ~11. Dub/voice reply language must be TTS-supported. Use `sarvam_code_languages` when unsure. |
-| **Odia code** | `od-IN` — never `or-IN`. |
-| **Audio paths** | Prefer absolute local paths. Many tools also accept `audio_base64` / `audio_url` + `filename`. |
-| **Output location** | Generated audio/docs land under `SARVAM_MCP_BASE_PATH` (default `~/Desktop`) unless the tool returns another path. |
-| **Bulbul v3 speakers** | v2 names (`anushka`, …) can 400 on v3. Default to `priya` / `shubh` or call `sarvam_code_speakers`. |
-| **Translate models** | `mayura:v1` — modes + `output_script`, fewer langs. `sarvam-translate:v1` — more langs, formal-only. |
-| **Don't re-implement** | If MCP is connected, call the tool — don't paste `curl` / SDK for the same action unless the user asked for code. |
+| Mistake agents make | Correct behavior |
+|---------------------|------------------|
+| Invent `curl`/SDK for a live ask | Call `sarvam_tools_*` when MCP is connected |
+| Hand-chain STT→translate→TTS | Use `voice` / `dub` / `localize` / `recall` |
+| REST STT on long files | Use `stt_batch_*` above ~30s |
+| TTS target outside ~11 langs | Check with `sarvam_code_languages` (`api=tts`); STT has ~23 |
+| v2 speaker on Bulbul v3 | Use `priya`/`shubh` or `sarvam_code_speakers` |
+| `pitch` / `loudness` on v3 | Only `pace` (0.5–2.0) |
+| Romanized Indic for TTS | Prefer native script |
+| `output_script` on `sarvam-translate:v1` | `mayura:v1` only |
+| Relative audio paths | Prefer absolute paths; or `audio_base64`/`audio_url` + `filename` |
+| Assume output cwd | Files go under `SARVAM_MCP_BASE_PATH` (default `~/Desktop`) unless tool returns another path |
+| Stale tool names without `_tools`/`_code` | Match the connected server's tool list |
 
-## MCP unavailable
+## When MCP is missing
 
-1. Install/connect per [references/install.md](references/install.md).
-2. Or use SDK skills + [docs.sarvam.ai/llms.txt](https://docs.sarvam.ai/llms.txt) to write code the user can run.
+1. Read [references/install.md](references/install.md) and help the user connect the server.
+2. If they only need code: use sibling skills `translate`, `speech-to-text`, `text-to-speech`, `chat`, or https://docs.sarvam.ai/llms.txt.
 
-## Full docs
+## References (load on demand)
 
-- [sarvam-mcp README](https://github.com/sarvamai/sarvam-mcp)
-- [Installation by client](references/install.md)
-- [Tool reference](references/tools.md)
-- [docs.sarvam.ai/llms.txt](https://docs.sarvam.ai/llms.txt)
+| File | Read when |
+|------|-----------|
+| [references/install.md](references/install.md) | MCP not connected, setup/troubleshoot, or user names a client |
+| [references/tools.md](references/tools.md) | Choosing parameters, env vars, or an uncommon tool |

@@ -1,15 +1,19 @@
 ---
 name: speech-to-text
-description: Transcribe audio to text using Sarvam AI's Saaras model. Handles speech recognition, transcription, and voice interfaces for 23 Indian languages. Supports 5 output modes, auto language detection, WebSocket streaming, and batch diarization. Use when converting speech to text or building voice-enabled apps.
+description: >-
+  Write correct Sarvam Saaras STT code for 23 Indic languages — REST modes,
+  Batch API with diarization, and WebSocket streaming gotchas. Use this skill
+  when building transcription or voice apps in Python or JS/TS. For live
+  transcription in chat via MCP, use sarvam-mcp instead.
 license: Apache-2.0
 metadata:
   author: sarvam-ai
-  version: "3.1"
+  version: "3.2"
 ---
 
 # Speech-to-Text — Saaras
 
-> Prefer the [sarvam-mcp](../sarvam-mcp) skill + `sarvam_tools_stt_*` when the user wants a **live** transcription in chat. This skill is for **writing SDK code**.
+> Live in-chat transcription → [sarvam-mcp](../sarvam-mcp) (`sarvam_tools_stt_*`). This skill = **SDK code**.
 
 > [!IMPORTANT]
 > Auth: `api-subscription-key` header — NOT `Authorization: Bearer`. Base URL: `https://api.sarvam.ai/v1`

@@ -1,89 +1,86 @@
-# Sarvam MCP — tool reference
+# Tool & env reference
 
-Call schemas are authoritative on the connected server. This file is a routing map + defaults, not a full OpenAPI dump. For exact shapes while coding, use `sarvam_code_api_reference`.
+Connected-server schemas win. Use this for defaults and routing; for exact request shapes while coding, call `sarvam_code_api_reference`.
+
+## Audio input pattern
+
+Most audio tools accept one of:
+
+- `audio_path` — absolute local path (preferred)
+- `audio_base64` + `filename`
+- `audio_url` + `filename`
 
 ## Runtime — `sarvam_tools_*`
 
-### Speech-to-text
+### STT
 
-| Tool | Role | Notes |
-|------|------|-------|
-| `sarvam_tools_stt_transcribe` | File → transcript | Default model `saaras:v3`. Modes: `transcribe`, `translate`, `verbatim`, `translit`, `codemix`. REST suited to short clips (~30s). |
-| `sarvam_tools_stt_translate` | Speech → English text | Dedicated speech-translation path. |
-| `sarvam_tools_stt_batch_submit` | Long audio / diarization job | Use for files beyond REST limits; diarization + multi-file. |
-| `sarvam_tools_stt_batch_status` | Poll / fetch batch job | Pair with submit; download when complete. |
+| Tool | Use for | Notes |
+|------|---------|-------|
+| `stt_transcribe` | Short clip → text | `saaras:v3`; modes: `transcribe`, `translate`, `verbatim`, `translit`, `codemix`. REST ~30s. |
+| `stt_translate` | Speech → English | Dedicated path |
+| `stt_batch_submit` | Long audio, diarization, multi-file | Then poll status |
+| `stt_batch_status` | Poll / download batch job | |
 
-Audio input (common pattern): `audio_path` and/or `audio_base64` / `audio_url` + `filename`. Prefer absolute paths.
+### TTS
 
-### Text-to-speech
+| Tool | Use for | Notes |
+|------|---------|-------|
+| `tts_speak` | Text → file | `bulbul:v3`; output per `SARVAM_AUDIO_OUTPUT_MODE` |
+| `tts_stream` | Lower-latency stream | When client handles streams |
 
-| Tool | Role | Notes |
-|------|------|-------|
-| `sarvam_tools_tts_speak` | Text → audio file | Default `bulbul:v3`. Returns path (and/or resource) per `SARVAM_AUDIO_OUTPUT_MODE`. |
-| `sarvam_tools_tts_stream` | Text → streamed audio | Lower latency path when the client supports stream handling. |
+Speaker default: `priya`. Pace only on v3 — no `pitch`/`loudness`. Native-script Indic text.
 
-Defaults: speaker often `priya` / `shubh`. Pace works on v3; don't invent `pitch`/`loudness`. Prefer native-script Indic text.
+### Text / LLM / vision
 
-### Text
+| Tool | Use for |
+|------|---------|
+| `translate` | Text translation (`mayura:v1` or `sarvam-translate:v1`) |
+| `transliterate` | Script conversion |
+| `identify_language` | LID + script (pre-step for TTS/translate) |
+| `text_analytics` | Typed Q&A over text |
+| `llm_complete` | Chat (`sarvam-30b` default, `sarvam-105b` flagship) |
+| `vision_extract` | Document intelligence |
+| `vision_job_status` | Poll vision job |
+| `pronunciation_*` | Dict CRUD (bulbul:v3) |
+| `set_api_key` | Persist key to `~/.sarvam/credentials` |
 
-| Tool | Role | Notes |
-|------|------|-------|
-| `sarvam_tools_translate` | Cross-language translate | Models: `mayura:v1` (default in many flows) or `sarvam-translate:v1`. |
-| `sarvam_tools_transliterate` | Script conversion | Roman ↔ native, etc. |
-| `sarvam_tools_identify_language` | LID + script | Good pre-step before TTS/translate. |
-| `sarvam_tools_text_analytics` | Typed Q&A over text | Structured analytics prompts. |
+Prefix every name above with `sarvam_tools_`.
 
-### LLM / vision / pronunciation
+### Composites
 
-| Tool | Role | Notes |
-|------|------|-------|
-| `sarvam_tools_llm_complete` | Chat completions | Default `sarvam-30b`; flagship `sarvam-105b`. OpenAI-style messages. |
-| `sarvam_tools_vision_extract` | Document intelligence | Submit job / extract. |
-| `sarvam_tools_vision_job_status` | Poll vision job | |
-| `sarvam_tools_pronunciation_list` | List dicts | bulbul:v3 |
-| `sarvam_tools_pronunciation_get` | Get dict | |
-| `sarvam_tools_pronunciation_create` | Create dict | |
-| `sarvam_tools_pronunciation_delete` | Delete dict | |
-
-### Composite workflows
-
-| Tool | Pipeline | Required inputs (typical) |
-|------|----------|---------------------------|
-| `sarvam_tools_voice` | STT → LLM → TTS | Audio in; optional `system_prompt`, `reply_language`, `speaker`, `llm_model` |
-| `sarvam_tools_dub` | STT → Translate → TTS | Audio + `target_language_code` (TTS langs only) |
-| `sarvam_tools_localize` | Translate string table | `source_path` + `target_language_code`; optional `output_path`, `model` |
-| `sarvam_tools_recall` | STT → LLM Q&A/summary | `question` + audio `paths` |
-
-### Auth
-
-| Tool | Role |
-|------|------|
-| `sarvam_tools_set_api_key` | First-time setup / rotation → `~/.sarvam/credentials` |
+| Tool | Pipeline | Typical required args |
+|------|----------|------------------------|
+| `voice` | STT → LLM → TTS | audio in; optional `system_prompt`, `reply_language`, `speaker` |
+| `dub` | STT → Translate → TTS | audio + `target_language_code` (TTS langs only) |
+| `localize` | String-table translate | `source_path` + `target_language_code` |
+| `recall` | STT → LLM Q&A | `question` + audio `paths` |
 
 ## Build-time — `sarvam_code_*`
 
-These do **not** call generation APIs for the user's content (except live-verified snippets where documented). Safe default when drafting integrations.
+Safe for drafting integrations (no user-content generation credits, except live-verified snippets where documented).
 
-| Tool | Role |
-|------|------|
-| `sarvam_code_search_docs` | Search docs.sarvam.ai |
-| `sarvam_code_api_reference` | Request/response for a known endpoint path |
-| `sarvam_code_languages` | BCP-47 list for `stt` / `tts` / `translate` / … |
-| `sarvam_code_speakers` | Speakers for `bulbul:v3` / `v2` / beta |
-| `sarvam_code_snippet` | Tested snippet (`python` / `javascript` / `typescript` / `curl`) |
-| `sarvam_code_recommend_model` | Task description → model + lang heuristics (no API key) |
-| `sarvam_code_validate_request` | Validate draft body before send |
-| `sarvam_code_pricing` | High-level billing structure (confirm on dashboard) |
+| Tool | Use for |
+|------|---------|
+| `recommend_model` | Plain-English task → model + lang (no API key) |
+| `api_reference` | Known endpoint path → request/response |
+| `snippet` | `stt`/`tts`/`translate`/`llm` × `python`/`javascript`/`typescript`/`curl` |
+| `languages` | Coverage for `stt`/`tts`/`translate`/… |
+| `speakers` | `bulbul:v3` / `v2` / beta |
+| `validate_request` | Draft body lint before ship |
+| `search_docs` | docs.sarvam.ai search |
+| `pricing` | Billing structure (confirm on dashboard) |
 
-## Observability
+Prefix every name above with `sarvam_code_`.
 
-Runtime tool responses typically include an `observability` object (latency, request IDs, credit usage). Surface it when debugging failures or cost; omit from casual answers.
-
-## Env knobs (server)
+## Env
 
 | Variable | Default | Meaning |
 |----------|---------|---------|
 | `SARVAM_API_KEY` | — | Required unless credentials file set |
-| `SARVAM_API_BASE_URL` | `https://api.sarvam.ai` | Override for staging |
-| `SARVAM_MCP_BASE_PATH` | `~/Desktop` | Where files are written |
+| `SARVAM_API_BASE_URL` | `https://api.sarvam.ai` | Staging override |
+| `SARVAM_MCP_BASE_PATH` | `~/Desktop` | Output directory |
 | `SARVAM_AUDIO_OUTPUT_MODE` | `files` | `files` \| `resources` \| `both` |
+
+## Observability
+
+Runtime responses often include `observability` (latency, request IDs, credits). Surface when debugging; skip in casual answers.
