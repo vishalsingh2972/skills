@@ -9,6 +9,8 @@ metadata:
 
 # Voice Agents — Sarvam AI
 
+> For one-shot in-chat voice (STT→LLM→TTS / dubbing), use [sarvam-mcp](../sarvam-mcp) (`sarvam_tools_voice`, `sarvam_tools_dub`). This skill is for **building** LiveKit/Pipecat agents in code.
+
 > [!IMPORTANT]
 > Auth: `api-subscription-key` header — NOT `Authorization: Bearer`. Env var: `SARVAM_API_KEY`
 

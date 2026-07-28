@@ -9,6 +9,8 @@ metadata:
 
 # Speech-to-Text — Saaras
 
+> Prefer the [sarvam-mcp](../sarvam-mcp) skill + `sarvam_tools_stt_*` when the user wants a **live** transcription in chat. This skill is for **writing SDK code**.
+
 > [!IMPORTANT]
 > Auth: `api-subscription-key` header — NOT `Authorization: Bearer`. Base URL: `https://api.sarvam.ai/v1`
 

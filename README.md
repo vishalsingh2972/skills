@@ -18,12 +18,15 @@ LLMs have fixed knowledge from their training cutoff. Sarvam AI's SDK has unique
 
 These skills bridge that gap. Each one gives AI coding assistants the exact SDK signatures and gotchas they need to generate correct Sarvam AI code, then routes to [llms.txt](https://docs.sarvam.ai/llms.txt) for detailed documentation.
 
+For **in-chat** Sarvam actions (translate this, speak that, dub audio) across Cursor, Claude Code, and other MCP clients, install [sarvam-mcp](https://github.com/sarvamai/sarvam-mcp) and use the [sarvam-mcp](./sarvam-mcp) skill.
+
 ## Skills
 
-The [vibe-coding](./vibe-coding) skill is **stack- and vendor-agnostic**—it is for anyone building with an agent. The other skills in this list document **Sarvam** APIs; use them when you integrate that product.
+The [vibe-coding](./vibe-coding) skill is **stack- and vendor-agnostic**—it is for anyone building with an agent. [sarvam-mcp](./sarvam-mcp) teaches agents to drive the Sarvam MCP server in any harness. The other skills document **Sarvam** SDK APIs for writing code.
 
 | Skill | Description |
 |-------|-------------|
+| [sarvam-mcp](./sarvam-mcp) | **MCP (any harness)** — route `sarvam_tools_*` (runtime) vs `sarvam_code_*` (build-time), auth, workflows (voice/dub/localize/recall), and client install. Use when Sarvam MCP is connected or the user wants live STT/TTS/translate in chat. |
 | [chat](./chat) | Chat completions with Sarvam-105B/30B. Python & JS/TS quick starts, streaming, reasoning mode, OpenAI-compatible path, and the `content=None` gotcha. |
 | [speech-to-text](./speech-to-text) | Audio transcription with Saaras v3. Python & JS/TS quick starts, Batch API (long audio + diarization), and WebSocket streaming for 23 languages. |
 | [text-to-speech](./text-to-speech) | Speech synthesis with Bulbul v3. Python & JS/TS quick starts, HTTP stream, WebSocket, pronunciation dictionaries, and unsupported parameter warnings. |
@@ -38,6 +41,7 @@ The [vibe-coding](./vibe-coding) skill is **stack- and vendor-agnostic**—it is
 npx skills add sarvamai/skills
 
 # Install a specific skill
+npx skills add sarvamai/skills --skill sarvam-mcp
 npx skills add sarvamai/skills --skill chat
 npx skills add sarvamai/skills --skill vibe-coding
 
@@ -46,27 +50,31 @@ npx skills add sarvamai/skills --list
 ```
 
 ```bash
-# Setup
+# Setup (SDK skills)
 export SARVAM_API_KEY="your-api-key"  # get at dashboard.sarvam.ai
 pip install sarvamai    # Python
 npm install sarvamai    # JavaScript/TypeScript
+
+# Setup (MCP skill — live tools in-chat)
+# uvx sarvam-mcp  — see sarvam-mcp/references/install.md for each client
 ```
 
-Works with **Cursor**, **Claude Code**, **Windsurf**, and any agent that supports the [Agent Skills specification](https://agentskills.io/specification).
+Works with **Cursor**, **Claude Code**, **Windsurf**, and any agent that supports the [Agent Skills specification](https://agentskills.io/specification). The MCP skill also covers Claude Desktop, Zed, Codex, Gemini CLI, VS Code, Cline, Continue, and LM Studio.
 
 ## How It Works
 
 ```
-skill/SKILL.md           ← SDK signatures + gotchas (what agents get wrong)
+sarvam-mcp/SKILL.md     ← MCP routing (tools_* vs code_*) for any harness
+SDK skill/SKILL.md       ← SDK signatures + gotchas (what agents get wrong)
     │
     ▼
-llms.txt                 ← Always-fresh comprehensive docs index
+llms.txt / MCP code_*    ← Always-fresh docs index or live API reference tools
     │
     ▼
 Full API docs, OpenAPI spec, cookbooks, voice catalog, streaming protocols...
 ```
 
-Each skill is a lean **correction layer** with both **Python** and **JavaScript/TypeScript** SDK snippets — it contains only what AI agents are likely to get wrong when generating Sarvam AI code:
+**sarvam-mcp** teaches agents when to call live MCP tools vs build-time helpers, and how to install the server in each client. The other Sarvam skills are a lean **correction layer** with both **Python** and **JavaScript/TypeScript** SDK snippets — only what AI agents get wrong when generating Sarvam AI code:
 
 - **SDK call signatures** that differ from conventions (e.g., no `.create()` on chat)
 - **Parameters that silently fail** (e.g., `output_script` ignored on sarvam-translate)

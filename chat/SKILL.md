@@ -9,6 +9,8 @@ metadata:
 
 # Chat Completions — Sarvam AI
 
+> Prefer the [sarvam-mcp](../sarvam-mcp) skill + `sarvam_tools_llm_complete` when the user wants a **live** completion in chat. This skill is for **writing SDK code**.
+
 > [!IMPORTANT]
 > Auth: `api-subscription-key` header — NOT `Authorization: Bearer`. Base URL: `https://api.sarvam.ai/v1`
 
