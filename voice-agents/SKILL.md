@@ -132,7 +132,7 @@ const client = new SarvamAIClient({ apiSubscriptionKey: "YOUR_SARVAM_API_KEY" })
 | **LiveKit: `flush_signal=True`** | Required on `sarvam.STT` for speech start/end events and proper turn-taking. |
 | **TTS param is `speaker`** | Both LiveKit and Pipecat plugins use `speaker="shubh"` — NOT `voice=`. |
 | **Pipecat class names** | `SarvamSTTService`/`SarvamTTSService`/`SarvamLLMService` from `pipecat.services.sarvam.stt/.tts/.llm` — NOT `SarvamSTT`. LLM model goes in `SarvamLLMService.Settings(model=...)`, system prompt in `LLMContext` messages. |
-| **`sarvam-30b` is deprecated** | Requests with `model="sarvam-30b"` fail with a 400. Use `sarvam-105b` — it's now the only supported chat model, for voice pipelines too. |
+| **`sarvam-30b` is deprecated** | Docs list it under Legacy Models ("migrate to Sarvam-105B"), and `sarvamai` ≥0.1.29 types chat as `SarvamModelIds = Literal["sarvam-105b"]`. Pipecat rejects it outright — `SarvamLLMService._SUPPORTED_MODELS = frozenset({"sarvam-105b"})`, so a non-105b model raises `ValueError` at construction. Use `sarvam-105b` for voice too. |
 | **`max_tokens` budget** | Sarvam models reason internally. Don't set low `max_tokens` or `content` will be `None`. Omit, set 500+, or disable with `reasoning_effort=None`. |
 | **TTS pitch/loudness** | NOT supported on Bulbul v3 — API returns 400. Only `pace` works. |
 | **STT WebSocket codecs** | Only `wav`/`pcm` — no MP3/AAC/OGG for streaming. |
