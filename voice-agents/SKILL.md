@@ -8,7 +8,7 @@ description: >-
 license: Apache-2.0
 metadata:
   author: sarvam-ai
-  version: "3.2"
+  version: "3.3"
 ---
 
 # Voice Agents — Sarvam AI
@@ -39,7 +39,7 @@ class VoiceAgent(Agent):
                 mode="transcribe",
                 flush_signal=True     # emits speech start/end events for turn-taking
             ),
-            llm=sarvam.LLM(model="sarvam-30b"),
+            llm=sarvam.LLM(model="sarvam-105b"),
             tts=sarvam.TTS(
                 target_language_code="en-IN",
                 model="bulbul:v3",
@@ -94,7 +94,7 @@ tts = SarvamTTSService(
 )
 llm = SarvamLLMService(
     api_key=os.getenv("SARVAM_API_KEY"),
-    settings=SarvamLLMService.Settings(model="sarvam-30b"),
+    settings=SarvamLLMService.Settings(model="sarvam-105b"),
 )
 
 messages = [{"role": "system", "content": "You are a friendly AI assistant. Keep responses brief."}]
@@ -132,7 +132,7 @@ const client = new SarvamAIClient({ apiSubscriptionKey: "YOUR_SARVAM_API_KEY" })
 | **LiveKit: `flush_signal=True`** | Required on `sarvam.STT` for speech start/end events and proper turn-taking. |
 | **TTS param is `speaker`** | Both LiveKit and Pipecat plugins use `speaker="shubh"` — NOT `voice=`. |
 | **Pipecat class names** | `SarvamSTTService`/`SarvamTTSService`/`SarvamLLMService` from `pipecat.services.sarvam.stt/.tts/.llm` — NOT `SarvamSTT`. LLM model goes in `SarvamLLMService.Settings(model=...)`, system prompt in `LLMContext` messages. |
-| **Use `sarvam-30b`** | Best latency for voice. Only use `sarvam-105b` when reasoning quality matters more than speed. |
+| **`sarvam-30b` is deprecated** | Docs list it under Legacy Models ("migrate to Sarvam-105B"), and `sarvamai` ≥0.1.29 types chat as `SarvamModelIds = Literal["sarvam-105b"]`. Pipecat rejects it outright — `SarvamLLMService._SUPPORTED_MODELS = frozenset({"sarvam-105b"})`, so a non-105b model raises `ValueError` at construction. Use `sarvam-105b` for voice too. |
 | **`max_tokens` budget** | Sarvam models reason internally. Don't set low `max_tokens` or `content` will be `None`. Omit, set 500+, or disable with `reasoning_effort=None`. |
 | **TTS pitch/loudness** | NOT supported on Bulbul v3 — API returns 400. Only `pace` works. |
 | **STT WebSocket codecs** | Only `wav`/`pcm` — no MP3/AAC/OGG for streaming. |
