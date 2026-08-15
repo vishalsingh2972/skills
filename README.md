@@ -59,7 +59,25 @@ npm install sarvamai    # JavaScript/TypeScript
 # uvx sarvam-mcp  — see sarvam-mcp/references/install.md for each client
 ```
 
-Works with **Cursor**, **Claude Code**, **Windsurf**, and any agent that supports the [Agent Skills specification](https://agentskills.io/specification). The MCP skill also covers Claude Desktop, Zed, Codex, Gemini CLI, VS Code, Cline, Continue, and LM Studio.
+## SDK usage & naming
+
+Quick mapping for the SDK examples used in this repo and how to authenticate.
+
+| Language | Client / constructor | Auth (preferred) | Notes / example |
+|----------|----------------------|------------------:|-----------------|
+| Python   | `from sarvamai import SarvamAI` → `client = SarvamAI()` | `SARVAM_API_KEY` env OR `~/.sarvam/credentials` (`api_key = sk_...`) | Examples in SKILL.md use the environment/credentials pattern; prefer env for CI. |
+| JavaScript / TypeScript | `import { SarvamAIClient } from "sarvamai";` → `const client = new SarvamAIClient({ apiSubscriptionKey: "sk_..." })` | Pass `apiSubscriptionKey` in constructor or set `SARVAM_API_KEY` env (client may read env) | The JS/TS constructor accepts `apiSubscriptionKey` in examples for clarity. |
+
+Working curl example (sets the required header directly):
+```bash
+curl -sS -X POST "https://api.sarvam.ai/v1/chat/completions" \
+  -H "Content-Type: application/json" \
+  -H "api-subscription-key: sk_..." \
+  -d '{"model":"sarvam-30b","messages":[{"role":"user","content":"Hello"}]}'
+```
+
+Note about OpenAI-compatible wrappers
+- The Sarvam HTTP API expects the `api-subscription-key` header (or credentials file / env). Some OpenAI client libraries automatically send `Authorization: Bearer <key>` and do not let you change header names. If you use an OpenAI-compatible client with `base_url="https://api.sarvam.ai/v1"`, verify that it sends the correct header; otherwise use a tiny proxy or a request middleware that injects `api-subscription-key` (or call the API with curl/fetch/axios where you control headers).
 
 ## How It Works
 
